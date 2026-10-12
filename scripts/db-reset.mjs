@@ -9,12 +9,12 @@ if (!connectionString) {
 
 const client = new pg.Client({ connectionString });
 await client.connect();
-
 try {
-  const schemaUrl = new URL("../db/schema.sql", import.meta.url);
-  const schema = await readFile(schemaUrl, "utf8");
-  await client.query(schema);
-  console.log("Schema applied.");
+  for (const file of ["schema.sql", "seed.sql"]) {
+    const sql = await readFile(new URL(`../db/${file}`, import.meta.url), "utf8");
+    await client.query(sql);
+    console.log(`Applied ${file}`);
+  }
 } finally {
   await client.end();
 }
