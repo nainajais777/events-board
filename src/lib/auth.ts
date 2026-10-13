@@ -63,3 +63,14 @@ export const authCookieOptions = {
   path: "/",
   maxAge: TOKEN_TTL_SECONDS,
 };
+// Use at the top of every admin API: returns the admin, or a ready-made 401/403 response.
+export async function requireAdmin(request: NextRequest): Promise<AuthUser | Response> {
+  const user = await getAuthUser(request);
+  if (!user) {
+    return Response.json({ error: "Not logged in" }, { status: 401 });
+  }
+  if (user.role !== "admin") {
+    return Response.json({ error: "Admin access required" }, { status: 403 });
+  }
+  return user;
+}

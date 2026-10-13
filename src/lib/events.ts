@@ -104,3 +104,58 @@ export async function listUpcomingEvents(filters: EventFilters) {
     },
   };
 }
+export type AdminEvent = PublicEvent & { isActive: boolean };
+
+type AdminEventRow = Omit<EventRow, "total_count"> & { is_active: boolean };
+
+const ADMIN_COLUMNS =
+  "id, title, category, city, starts_at, price_paise, description, image_url, is_active";
+
+function toAdminEvent(row: AdminEventRow): AdminEvent {
+  return {
+    id: row.id,
+    title: row.title,
+    category: row.category,
+    city: row.city,
+    startsAt: row.starts_at.toISOString(),
+    pricePaise: row.price_paise,
+    description: row.description,
+    imageUrl: row.image_url,
+    isActive: row.is_active,
+  };
+}
+
+export async function listAllEvents(): Promise<AdminEvent[]> {
+  const result = await pool.query<AdminEventRow>(
+    `SELECT ${ADMIN_COLUMNS} FROM events ORDER BY starts_at DESC, id DESC LIMIT 200`
+  );
+  return result.rows.map(toAdminEvent);
+}
+
+export type NewEvent = {
+  title: string;
+  category: Category;
+  city: string;
+  startsAt: string;
+  pricePaise: number;
+  description: string;
+  imageUrl: string;
+};
+
+export async function createEvent(input: NewEvent): Promise<AdminEvent> {
+  const result = await pool.query<AdminEventRow>(
+    `INSERT INTO events (title, category, city, starts_at, price_paise, description, image_url)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING ${ADMIN_COLUMNS}`,
+    [input.title, input.category, input.city, input.startsAt, input.pricePaise, input.description, input.imageUrl]
+  );
+  return toAdminEvent(result.rows[0]);
+}
+
+export async function setEventActive(id: number, isActive: boolean): Promise<AdminEvent | null> {
+  const result = await pool.query<AdminEventRow>(
+    `UPDATE events SET is_active = $2 WHERE id = $1 RETURNING ${ADMIN_COLUMNS}`,
+    [id, isActive]
+  );
+  return result.rows[0] ? toAdminEvent(result.rows[0]) : null;
+}
