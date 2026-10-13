@@ -8,12 +8,12 @@ export async function proxy(request: NextRequest) {
   if (!user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (user.role !== "admin") {
+  if (request.nextUrl.pathname.startsWith("/admin") && user.role !== "admin") {
     return NextResponse.redirect(new URL("/events", request.url));
   }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/favourites", "/feed"],
 };

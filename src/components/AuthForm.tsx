@@ -46,8 +46,9 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         return;
       }
 
-      router.push(login.data.user.role === "admin" ? "/admin" : "/events");  
-      } catch {
+      const destination =
+        login.data.user.role === "admin" ? "/admin" : mode === "signup" ? "/favourites" : "/feed";
+      router.push(destination);      } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setSubmitting(false);

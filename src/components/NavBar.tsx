@@ -36,6 +36,8 @@ export default function NavBar() {
               {user.role === "admin" && (
                 <Link href="/admin" className="font-medium text-gray-700 hover:text-indigo-700">Admin</Link>
               )}
+              <Link href="/feed" className="font-medium text-gray-700 hover:text-indigo-700">My Feed</Link>
+              <Link href="/favourites" className="font-medium text-gray-700 hover:text-indigo-700">Favourites</Link>
               <span className="hidden text-gray-500 sm:inline">{user.email}</span>
               <button onClick={logout} className="rounded-lg border border-gray-300 px-3 py-1.5 text-gray-700 hover:bg-gray-50">
                 Log out

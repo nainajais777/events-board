@@ -3,6 +3,7 @@ import type { Category } from "@/lib/categories";
 
 export type EventFilters = {
   category?: Category;
+  categories?: Category[];
   city?: string;
   q?: string;
   page: number;
@@ -44,6 +45,10 @@ export async function listUpcomingEvents(filters: EventFilters) {
   if (filters.category) {
     values.push(filters.category);
     conditions.push(`category = $${values.length}`);
+  }
+    if (filters.categories) {
+    values.push(filters.categories);
+    conditions.push(`category = ANY($${values.length}::text[])`);
   }
   if (filters.city) {
     values.push(filters.city);

@@ -74,3 +74,11 @@ export async function requireAdmin(request: NextRequest): Promise<AuthUser | Res
   }
   return user;
 }
+// For APIs any logged-in user may call: returns the user, or a ready-made 401.
+export async function requireUser(request: NextRequest): Promise<AuthUser | Response> {
+  const user = await getAuthUser(request);
+  if (!user) {
+    return Response.json({ error: "Not logged in" }, { status: 401 });
+  }
+  return user;
+}
