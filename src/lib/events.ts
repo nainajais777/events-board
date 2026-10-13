@@ -171,6 +171,6 @@ export async function getPublicEvent(id: number): Promise<PublicEvent | null> {
   );
   const row = result.rows[0];
   if (!row) return null;
-  const { isActive: _isActive, ...event } = toAdminEvent(row);
-  return event;
+   const { isActive, ...event } = toAdminEvent(row);
+  return isActive ? event : null;
 }
