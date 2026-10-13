@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import EventCard from "@/components/EventCard";
 import type { PublicEvent } from "@/lib/events";
+import { useReminders } from "@/hooks/useReminders";
 
 type FeedResponse = {
   categories: string[];
@@ -16,7 +17,7 @@ export default function FeedList() {
   const [reloadKey, setReloadKey] = useState(0);
   const [data, setData] = useState<FeedResponse | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-
+  const reminders = useReminders();
   useEffect(() => {
     const controller = new AbortController();
     fetch(`/api/feed?page=${page}`, { signal: controller.signal })
@@ -75,7 +76,9 @@ export default function FeedList() {
         Showing: {data.categories.join(", ")} ·{" "}
         <Link href="/favourites" className="text-indigo-700 hover:underline">Change</Link>
       </p>
-
+            {reminders.error && (
+        <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{reminders.error}</p>
+      )}
       {data.events.length === 0 ? (
         <div className="mt-6 rounded-xl bg-white p-8 text-center shadow-sm">
           <p className="text-lg font-medium text-gray-900">No upcoming events in your categories right now.</p>
@@ -83,8 +86,18 @@ export default function FeedList() {
         </div>
       ) : (
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {data.events.map((event) => <EventCard key={event.id} event={event} />)}
-        </ul>
+          {data.events.map((event) => (
+            <EventCard
+              key={event.id}
+              event={event}
+              reminder={{
+                status: reminders.status,
+                isOn: reminders.isOn(event.id),
+                pending: reminders.isPending(event.id),
+                onToggle: () => reminders.toggle(event.id),
+              }}
+            />
+          ))}        </ul>
       )}
 
       {data.pagination.totalPages > 1 && (
