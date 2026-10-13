@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -21,6 +21,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+    const router = useRouter();
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -45,8 +46,8 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         return;
       }
 
-      window.location.assign(login.data.user.role === "admin" ? "/admin" : "/events");
-    } catch {
+      router.push(login.data.user.role === "admin" ? "/admin" : "/events");  
+      } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setSubmitting(false);

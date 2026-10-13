@@ -1,25 +1,27 @@
 "use client";
-
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 type User = { id: number; email: string; role: "user" | "admin" };
 
 export default function NavBar() {
   const [user, setUser] = useState<User | null>(null);
   const [checked, setChecked] = useState(false);
 
+  const pathname = usePathname();
+  const router = useRouter();
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setUser(data?.user ?? null))
       .catch(() => setUser(null))
       .finally(() => setChecked(true));
-  }, []);
+  },  [pathname]);
 
-  async function logout() {
+    async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
-    window.location.assign("/events");
+    setUser(null); 
+    router.push("/events");
   }
 
   return (
