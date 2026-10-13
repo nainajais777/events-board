@@ -21,7 +21,9 @@ export default function EventCard({ event, reminder }: { event: PublicEvent; rem
         <span className="self-start rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
           {event.category}
         </span>
-        <h2 className="mt-2 text-lg font-semibold text-gray-900">{event.title}</h2>
+        <h2 className="mt-2 text-lg font-semibold text-gray-900">
+          <Link href={`/events/${event.id}`} className="hover:text-indigo-700 hover:underline">{event.title}</Link>
+        </h2>        
         <p className="mt-1 text-sm text-gray-600">{formatEventDate(event.startsAt)} · {event.city}</p>
         <p className="mt-2 font-semibold text-gray-900">{formatPrice(event.pricePaise)}</p>
 

@@ -164,3 +164,13 @@ export async function setEventActive(id: number, isActive: boolean): Promise<Adm
   );
   return result.rows[0] ? toAdminEvent(result.rows[0]) : null;
 }
+export async function getPublicEvent(id: number): Promise<PublicEvent | null> {
+  const result = await pool.query<AdminEventRow>(
+    `SELECT ${ADMIN_COLUMNS} FROM events WHERE id = $1 AND is_active`,
+    [id]
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+  const { isActive: _isActive, ...event } = toAdminEvent(row);
+  return event;
+}

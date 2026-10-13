@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+@keyframes sticker-pop {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.animate-sticker-pop {
+  animation: sticker-pop 250ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-sticker-pop { animation: none; }
+}
