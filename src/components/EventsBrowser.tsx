@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
 import EventCard from "@/components/EventCard";
 import type { PublicEvent } from "@/lib/events";
+import { useReminders } from "@/hooks/useReminders";
 
 type Filters = { category: string; city: string; q: string };
 
@@ -21,7 +22,7 @@ export default function EventsBrowser() {
   const [reloadKey, setReloadKey] = useState(0);
   const [data, setData] = useState<EventsResponse | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-
+  const reminders = useReminders();
   useEffect(() => {
     const controller = new AbortController();
     const params = new URLSearchParams({ page: String(page) });
@@ -138,10 +139,21 @@ export default function EventsBrowser() {
 
       {status === "ready" && data && data.events.length > 0 && (
         <>
+        {reminders.error && (
+  <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{reminders.error}</p>
+)}
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.events.map((event) => (
-                <EventCard key={event.id} event={event} />
-            ))}
+<EventCard
+  key={event.id}
+  event={event}
+  reminder={{
+    status: reminders.status,
+    isOn: reminders.isOn(event.id),
+    pending: reminders.isPending(event.id),
+    onToggle: () => reminders.toggle(event.id),
+  }}
+/>            ))}
           </ul>
 
           {pagination && pagination.totalPages > 1 && (
