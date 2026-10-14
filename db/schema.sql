@@ -31,7 +31,7 @@ CREATE TABLE events (
   is_active   boolean NOT NULL DEFAULT true,
   created_at  timestamptz NOT NULL DEFAULT now()
 );
-
+CREATE INDEX events_active_starts_idx ON events (starts_at, id) WHERE is_active;
 CREATE TABLE user_favourite_categories (
   user_id  integer NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   category text    NOT NULL REFERENCES categories(name),
